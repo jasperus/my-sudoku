@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ERROR" monitorInterval="30">
+    <Properties>
+        <!--Property name="pattern">%d %-5p [%t] %c{1} - %m%n</Property-->
+        <!--Property name="location">${sys:LOG4J_LOG}</Property-->
+        <!--Property name="logLevel">${sys:LOG4J_SERVER_LOGLEVEL}</Property-->
+        <Property name="pattern">%m%n</Property>
+        <Property name="location">C:/Dev/Logs</Property>
+        <Property name="logLevel">INFO</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern}"/>
+        </Console>
+
+        <RollingFile name="FILE_APPENDER" fileName="${location}/Sudoku.log" filePattern="${location}/Sudoku.log.%d{yyyy-MM}">
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="sudoku" additivity="false" level="${logLevel}">
+            <!--AppenderRef ref="FILE_APPENDER" /-->
+            <AppenderRef ref="STDOUT" />
+        </Logger>
+
+        <Root level="${logLevel}">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+</Configuration>
