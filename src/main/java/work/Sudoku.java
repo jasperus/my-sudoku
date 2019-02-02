@@ -1,5 +1,8 @@
 package work;
 
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,19 +14,46 @@ public class Sudoku {
 
 	private static Logger logger = LogManager.getLogger();
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws UnsupportedEncodingException {
 
 //		cleanBoardIncrementalAndTestForSolutions();
-//		cleanBoardFixedAndTestForSolutions(55, 100);
+//		cleanBoardFixedAndTestForSolutions(53, 100);
 //		cleanAndSolveBoard(30, 1);
 
-
 		BoardExamples examples = new BoardExamples();
+
 //		testCleanedBoardsForSolutions(examples.boardDemoCleaned_30_3)
 //		testCleanedBoardsForSolutions(examples.boardDemoCleaned_70_2)
-//		testCleanedBoardsForSolutions(examples.hardestBoardCleaned);		// za pronalaženje rješenja ovog boarda treba 18 sec
-		solveBoard(examples.boardDemo2, examples.boardDemo2_cleaned_30);
+//		testCleanedBoardsForSolutions(examples.hardestBoardCleaned);		// za pronalaï¿½enje rjeï¿½enja ovog boarda treba 18 sec
 
+//		solveBoard(examples.hardestBoard, examples.hardestBoardCleaned);	// ovo ipak ostaviti za kraj, biti ï¿½e jako teï¿½ko napraviti algoritam koji ovo uspijeva rijeï¿½iti
+//		solveBoard(examples.testBoard, examples.testBoard_cleaned_50_1);	// ovo uspije rijeï¿½iti sa osnovnim algoritmom
+		solveBoard(examples.sudokuExample_hard_cleaned);			// imam grešku u algoritmu, ostala su samo 3 polja za rijeï¿½iti, ali izgleda da je krivo rijeï¿½ilo, pa je doï¿½lo do nemoguï¿½e situacije
+
+	}
+
+	// pass cleaned board that has unique solution
+	private static void solveBoard(int[][] cleanedBoard) {
+		Solutions solutions = new Solutions();
+		Solver solver = new Solver();
+
+		logger.info("Cleaned board:");
+		BoardUtils.printBoard(cleanedBoard);
+
+		solutions.findPossibleSolutions(cleanedBoard);
+		if (solutions.getNumOfSolutions() > 1) {
+			logger.info("Found " + solutions.getNumOfSolutions() + " possible solutions");
+			return;
+		}
+
+		int[][] solvedBoard = solver.solveBoard(cleanedBoard);
+
+		if (BoardUtils.isSolved(solvedBoard)) {
+			logger.info("\n*** Board is solved ***");
+		} else {
+			logger.info("\n*** Board is not solved ***");
+		}
+		BoardUtils.printBoard(solvedBoard);
 	}
 
 	private static void solveBoard(int[][] board, int[][] cleanedBoard) {
@@ -36,9 +66,15 @@ public class Sudoku {
 		logger.info("Cleaned board:");
 		BoardUtils.printBoard(cleanedBoard);
 		solutions.findPossibleSolutions(cleanedBoard);
+		// FIXME: dok nisam istitrao algoritam, neï¿½e rijeï¿½iti do kraja,
+		// ali ï¿½e ipak isprintati, jer board zapravo ima samo jedno rjeï¿½enje
+		// razmiï¿½ljao sam u buduï¿½nost...
 		if (solutions.getNumOfSolutions() == 1) {
+			logger.info("Found 1 possible solution:");
+			BoardUtils.printBoard(solutions.getSolvedBoards().get(0).getBoard());
+
 			int[][] solvedBoard = solver.solveBoard(cleanedBoard);
-			logger.info("Solved board:");
+			logger.info("\n*** Solved board ***");
 			BoardUtils.printBoard(solvedBoard);
 		}
 	}
@@ -75,13 +111,23 @@ public class Sudoku {
 
 		// #1 - generate 1 board
 		int[][] board = generator.createBoard();
+		logger.debug("Generated board:");
+		BoardUtils.printBoard(board);
 
 		// #2 - clean generated board
-		System.out.println("Empty fields: " + numOfEmptyFields);
+		System.out.println("\nClean board - Empty fields: " + numOfEmptyFields + "\n");
 		for (int i = 0; i < iterations; i++) {
+
 			int[][] cleanedBoard = cleaner.cleanBoard(BoardUtils.cloneArray(board), numOfEmptyFields);
+
 			solutions.findPossibleSolutions(cleanedBoard);
-			logger.info("  Possible solutions: " + solutions.getNumOfSolutions());
+			logger.info("#" + String.format("%0" + (int)(Math.log10(iterations)+1) + "d", (i+1))+ " iteration - possible solutions: " + solutions.getNumOfSolutions());
+
+			if (solutions.getNumOfSolutions() == 1) {
+				logger.debug("Cleaned board:");
+				BoardUtils.printBoard(cleanedBoard);
+				//BoardUtils.printBoard(solutions.getSolvedBoards().get(0).getBoard());
+			}
 		}
 	}
 

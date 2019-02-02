@@ -28,7 +28,7 @@ public class Generator {
 
     private int[][] createBoard(int xStart, int yStart) {
 
-        logger.debug("createBoard [row " + xStart + ", depth=" + depth[xStart] + "]");
+        logger.trace("createBoard [row " + xStart + ", depth=" + depth[xStart] + "]");
 
         List<Integer> fullRange = new ArrayList<Integer>();
 
@@ -41,7 +41,7 @@ public class Generator {
 
         Random rand = new Random();
         for (int x = xStart; x < 9; x++) {
-            logger.debug("x=" + x);
+            logger.trace("x=" + x);
             for (int y = yStart; y < 9; y++) {
                 range = new ArrayList<Integer>(fullRange);
                 int random;

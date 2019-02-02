@@ -11,10 +11,10 @@ public class BoardUtils {
 	private static Logger logger = LogManager.getLogger();
 
 	public static void printBoard(int[][] board) {
-		int NUM_DASHES = 19;
+		int REPEAT = 19;
         for (int i = 0; i < 9; i++) {
             if (i % 3 == 0)
-            	logger.info(StringUtils.repeat("-", NUM_DASHES));
+            	logger.info(StringUtils.repeat("-", REPEAT));
             StringBuilder sb = new StringBuilder();
             for (int j = 0; j < 9; j++) {
                 if (j % 3 == 0) {
@@ -27,7 +27,7 @@ public class BoardUtils {
             }
             logger.info(sb.toString());
         }
-        logger.info(StringUtils.repeat("-", NUM_DASHES));
+        logger.info(StringUtils.repeat("-", REPEAT));
     }
 
 	public static void printPossibleValuesBoard(List<Integer>[][] possibleValuesBoard) {
@@ -38,7 +38,7 @@ public class BoardUtils {
 				int[] possibleValues1D = new int[9];
 				if (possibleValuesList != null) {
 					for (int possibleValue : possibleValuesList) {
-						possibleValues1D[possibleValue] = possibleValue;
+						possibleValues1D[possibleValue - 1] = possibleValue;
 					}
 				}
 				int[][] possibleValues2D = makeArray2D(possibleValues1D);
@@ -46,23 +46,31 @@ public class BoardUtils {
 			}
 		}
 
-		int NUM_DASHES = 100;
-		for (int i = 0; i < 9; i++) {
-//			if (i % 3 == 0)
-//	        	logger.info(StringUtils.repeat("=", NUM_DASHES));
-			StringBuilder sb = new StringBuilder();
-			for (int j = 0; j < 9; j++) {
-
-//                if (j % 3 == 0) {
-//                    sb.append("|" + board[i][j]);
-//                } else {
-//                    sb.append(" " + board[i][j]);
-//                }
-//                if (j == 8)
-//                    sb.append("|");
-            }
-            logger.info(sb.toString());
+		int REPEAT = 68;
+		for (int i = 0; i < 9; i++) {					// #1 - board rows
+			if (i % 3 == 0) {
+				logger.debug(StringUtils.repeat("=", REPEAT));
+			} else {
+				logger.debug(StringUtils.repeat("-", REPEAT));
+			}
+			for (int k = 0; k < 3; k++) {				// #2 - possible values rows
+				StringBuilder sb = new StringBuilder();
+				for (int j = 0; j < 9; j++) {			// #3 - board columns
+					if (j % 3 == 0) {
+						sb.append("||");
+					} else {
+						sb.append("|");
+					}
+					for (int l = 0; l < 3; l++) {		// #4 - possible values columns
+						sb.append(" " + board4D[i][j][k][l]);
+					}
+					if (j == 8)
+						sb.append("||");
+				}
+				logger.debug(sb.toString());
+			}
 		}
+		logger.debug(StringUtils.repeat("=", REPEAT));
 	}
 
 	private static int[][] makeArray2D(int[] array1D) {
@@ -75,19 +83,18 @@ public class BoardUtils {
 
     public static boolean isNumberCandidate(int[][] board, int x, int y, int number) {
         if (
-                board[x][y] == 0 &&
+                board[x][y] == NO_VALUE &&
                 isPossibleX(board, x, y, number) &&
                 isPossibleY(board, x, y, number) &&
                 isPossibleBlock(board, x, y, number)
             ) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     private static boolean isPossibleX(int[][] board, int x, int y, int number) {
-        for (int i = 0; i <= y; i++) {
+        for (int i = 0; i < 9; i++) {
             if (board[x][i] == number) {
                 return false;
             }
@@ -96,7 +103,7 @@ public class BoardUtils {
     }
 
     private static boolean isPossibleY(int[][] board, int x, int y, int number) {
-        for (int i = 0; i <= x; i++) {
+        for (int i = 0; i < 9; i++) {
             if (board[i][y] == number) {
                 return false;
             }
@@ -130,6 +137,18 @@ public class BoardUtils {
             }
     	}
     	return true;
+    }
+
+    public static int unsolvedFieldsRemaining(int[][] board) {
+    	int remaining = 0;
+    	for (int row = BOARD_START_INDEX; row < BOARD_SIZE; row++) {
+            for (int column = BOARD_START_INDEX; column < BOARD_SIZE; column++) {
+                if (board[row][column] == NO_VALUE) {
+                	remaining++;
+                }
+            }
+    	}
+    	return remaining;
     }
 
     //*****************************************************************

@@ -18,7 +18,7 @@ public class Test {
 		BoardExamples examples = new BoardExamples();
 		boolean isSolved_1 = BoardUtils.isSolved(examples.board1);
 		boolean isSolved_4 = BoardUtils.isSolved(examples.board4);
-		boolean isSolved_30_1 = BoardUtils.isSolved(examples.boardDemoCleaned_30_1);
+		boolean isSolved_30_1 = BoardUtils.isSolved(examples.boardDemo1_cleaned30_1);
 		System.out.println("isSolved_1:" + isSolved_1);
 		System.out.println("isSolved_4:" + isSolved_4);
 		System.out.println("isSolved_30_1:" + isSolved_30_1);

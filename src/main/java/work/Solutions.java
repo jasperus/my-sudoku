@@ -24,7 +24,7 @@ public class Solutions {
 	private static final int SUBSECTION_SIZE = 3;
 
 	@Getter private int numOfSolutions;
-	private List<Board> solvedBoards;
+	@Getter private List<Board> solvedBoards;
 
 	public boolean findPossibleSolutions(int[][] board) {
 		numOfSolutions = 0;
@@ -49,8 +49,8 @@ public class Solutions {
 							if (!solvedBoards.contains(b)) {
 								solvedBoards.add(b);
 								numOfSolutions++;
-								logger.info("Possible solution " + numOfSolutions + ":");
-								BoardUtils.printBoard(solution);
+								// logger.debug("Possible solution " + numOfSolutions + ":");
+								// BoardUtils.printBoard(solution);
 							}
 							return true;
                         }

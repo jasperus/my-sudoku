@@ -42,7 +42,7 @@ public class Cleaner {
 
         Collections.sort(emptyPositions);
 
-        logger.debug("Empty positions:" + emptyPositions.toString());
+        logger.trace("Empty positions:" + emptyPositions.toString());
 
         int emptyPosition, emptyX, emptyY;
         int emptyPositionsSize = emptyPositions.size();
@@ -50,7 +50,7 @@ public class Cleaner {
             emptyPosition = emptyPositions.get(i);
             emptyX = emptyPosition / 9;
             emptyY = emptyPosition % 9;
-            logger.debug("Position:" + emptyPosition + ", X=" + emptyX + ", Y=" + emptyY);
+            logger.trace("Position:" + emptyPosition + ", X=" + emptyX + ", Y=" + emptyY);
 
             board[emptyX][emptyY] = NO_VALUE;
         }

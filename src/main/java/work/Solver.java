@@ -1,12 +1,12 @@
 package work;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,8 +31,14 @@ public class Solver {
 
     int[][] numberOfPossibleValuesBoard;
 
+    int numOfSolutionsForStep = 0;
+
+    int[][] partialySolvedBoard;
+
+    private int step;
+
     public int[][] solveBoard(int[][] board) {
-    	this.unsolvedBoard = board;
+        this.unsolvedBoard = board;
         numberOfPossibleValuesBoard = new int[9][9];
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y < 9; y++) {
@@ -44,7 +50,7 @@ public class Solver {
     }
 
     private int[][] solveBoardLikeHuman() {
-    	List<Integer> possibleValues;
+        List<Integer> possibleValues;
 
         // find all possible values for empty fields
         for (int x = 0; x < BOARD_SIZE; x++) {
@@ -64,6 +70,7 @@ public class Solver {
             }
         }
 
+        /*
         // helper statistic: show number of possible values per fields
         //   key: number of solutions
         //   value: number of fields that have "key" number of solutions
@@ -84,151 +91,257 @@ public class Solver {
         }
         //logger.info("Possible values board (" + Arrays.toString(occurencesMap.entrySet().toArray()) + "):");
         //BoardUtils.printBoard(numberOfPossibleValuesBoard);
+         */
 
-        int[][] partialySolvedBoard;
+        int loop = 0;
+        do {
+        	step = 0;
+        	numOfSolutionsForStep = 0;
+        	loop++;
 
-        logger.info("#1 - Solving one solution fields...");
-        partialySolvedBoard = solveOneSolutionFields(unsolvedBoard);
-        if (BoardUtils.isSolved(partialySolvedBoard))
-        	return partialySolvedBoard;
-        logger.info("Partially solved board:");
-       	BoardUtils.printBoard(partialySolvedBoard);
-       	logger.info("Number of possible values:");
-       	BoardUtils.printBoard(numberOfPossibleValuesBoard);
+        	logger.info("#" + loop + ".1 - Solving one solution fields...");
+        	partialySolvedBoard = solveOneSolutionFields(unsolvedBoard);
+        	if (BoardUtils.isSolved(partialySolvedBoard))
+        		return partialySolvedBoard;
+        	printStep();
 
-        logger.info("#2 - Solving rows...");
-        partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_ROW);
-        if (BoardUtils.isSolved(partialySolvedBoard))
-        	return partialySolvedBoard;
-        logger.info("Partially solved board:");
-       	BoardUtils.printBoard(partialySolvedBoard);
-       	logger.info("Number of possible values:");
-       	BoardUtils.printBoard(numberOfPossibleValuesBoard);
+        	// možda nam ova 3 ne trebaju, nisu riješila ništa (?)
+        	// doduše, za sada sam pokrenuo samo za jedan "cleared board"
+        	logger.info("#" + loop + ".2 - Solving rows...");
+        	partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_ROW);
+        	if (BoardUtils.isSolved(partialySolvedBoard))
+        		return partialySolvedBoard;
+        	printStep();
 
-       	logger.info("#3 - Solving columns...");
-       	partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_COLUMN);
-       	if (BoardUtils.isSolved(partialySolvedBoard))
-       		return partialySolvedBoard;
-       	logger.info("Partially solved board:");
-       	BoardUtils.printBoard(partialySolvedBoard);
-       	logger.info("Number of possible values:");
-       	BoardUtils.printBoard(numberOfPossibleValuesBoard);
+        	logger.info("#" + loop + ".3 - Solving columns...");
+        	partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_COLUMN);
+        	if (BoardUtils.isSolved(partialySolvedBoard))
+        		return partialySolvedBoard;
+        	printStep();
 
-       	logger.info("#4 - Solving blocks...");
-       	partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_BLOCK);
-       	if (BoardUtils.isSolved(partialySolvedBoard))
-       		return partialySolvedBoard;
-       	logger.info("Partially solved board:");
-       	BoardUtils.printBoard(partialySolvedBoard);
-       	logger.info("Number of possible values:");
-       	BoardUtils.printBoard(numberOfPossibleValuesBoard);
+        	logger.info("#" + loop + ".4 - Solving blocks...");
+        	partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_BLOCK);
+        	if (BoardUtils.isSolved(partialySolvedBoard))
+        		return partialySolvedBoard;
+        	printStep();
 
-       	return partialySolvedBoard;
+        } while (numOfSolutionsForStep > 0);
+
+        return partialySolvedBoard;
     }
 
-    private int step;
+    private void printStep() {
+    	logger.debug("Partially solved board:");
+    	BoardUtils.printBoard(partialySolvedBoard);
+//    	logger.debug("Number of possible values:");
+//    	BoardUtils.printBoard(numberOfPossibleValuesBoard);
+//    	logger.debug("Possible values board:");
+//    	BoardUtils.printPossibleValuesBoard(possibleValuesBoard);
+    }
 
     private int[][] solveOneSolutionFields(int[][] board) {
-    	step++;
-    	List<Integer> possibleValues;
-    	int solutions = 0;
-    	for (int x = 0; x < 9; x++) {
-    		for (int y = 0; y <9; y++) {
-    			if (numberOfPossibleValuesBoard[x][y] == 1) {
-    				solutions++;
-    				possibleValues = possibleValuesBoard[x][y];
+        step++;
+        List<Integer> possibleValues;
+        int solutions = 0;
+        int boardIndex = 0;
 
-    				// solve field
-    				unsolvedBoard[x][y] = possibleValues.get(0);
-
-    				// update helper arrays
-    				numberOfPossibleValuesBoard[x][y]--;
-    				possibleValuesBoard[x][y] = null;
-    			}
-    		}
-    	}
-    	logger.info("Step " + step + "...solved " + solutions + " fields");
-    	if (solutions > 0) {
-    		return solveOneSolutionFields(board);
-    	}
-    	return board;
+        for (int x = 0; x < 9; x++) {
+            for (int y = 0; y <9; y++) {
+                if (numberOfPossibleValuesBoard[x][y] == 1) {
+                    solutions++;
+                    numOfSolutionsForStep++;
+                    possibleValues = possibleValuesBoard[x][y];
+                    boardIndex = ((x / 3) * 3) + (y / 3);
+                    updateArraysAfterSolving(x, y, boardIndex, possibleValues.get(0));
+                }
+            }
+        }
+        logger.info("Step " + step + "...solved " + solutions + " fields, remaining " + BoardUtils.unsolvedFieldsRemaining(board) + " fields");
+//        logger.debug("Possible values board:");
+//        BoardUtils.printPossibleValuesBoard(possibleValuesBoard);
+        if (solutions > 0) {
+            return solveOneSolutionFields(board);
+        }
+        return board;
     }
 
     private int[][] solveSections(int[][] board, String type) {
-    	step++;
-    	List<Integer>[] possibleValuesArray;
-    	Map<Integer,List<Integer>> possibleValuesPositionsMap = new HashMap<Integer,List<Integer>>();
-    	int solutions = 0;
+        step++;
+        int solutions = 0;
+        List<Integer>[] possibleValuesArray;
+        List<Integer> possibleValuesPositions;
 
+        // *** Inverted map ***
+        // it does not contain that for positions 5 and 7 in section possible values are 2 and 3
+        // it does contain that for values 2 and 3 possible positions are 5 and 7
+        Map<Integer,List<Integer>> possibleValuesPositionsMap;
+
+        // FIXME: ovdje je nešto jako krivo...nemoguæe da je uspio riješiti 12 polja u prvom stepu, a ova beskonaèna petlja nakon toga...uh
+        // #1.2 - Solving rows...
+        // Step 5...solved 12 fields
+        // Step 6...solved 7 fields
+        // Step 7...solved 7 fields
+
+        // #1
+        // Find if there is only one position in unsolved fields for given value in section.
+        // If found, solve field and remove value from other unsolved fields in section.
         for (int m = 0; m < 9; m++) {	// iterate through rows / columns / blocks
-        	possibleValuesArray = getPossibleValuesSection(possibleValuesBoard, m, type);
-        	List<Integer> possibleValuesPositions;
+            possibleValuesArray = getPossibleValuesSection(possibleValuesBoard, m, type);
+            possibleValuesPositionsMap = new HashMap<Integer,List<Integer>>();
 
-        	for (int n = 0; n < 9; n++) {		// iterate through columns in the row / rows in the column / fields in the block
+            for (int n = 0; n < 9; n++) {		// iterate through columns in the row / rows in the column / fields in the block
                 if (possibleValuesArray[n] != null) {
-
                     for (int possibleValue : possibleValuesArray[n]) {
-                    	if (possibleValuesPositionsMap.containsKey(possibleValue)) {
-                    		possibleValuesPositions = possibleValuesPositionsMap.get(possibleValue);
-                    	} else {
-                    		possibleValuesPositions = new ArrayList<>();
-                    	}
-                    	possibleValuesPositionsMap.put(possibleValue, possibleValuesPositions);
+                        if (possibleValuesPositionsMap.containsKey(possibleValue)) {
+                            possibleValuesPositions = possibleValuesPositionsMap.get(possibleValue);
+                        } else {
+                            possibleValuesPositions = new ArrayList<>();
+                        }
+                        possibleValuesPositions.add(n);
+                        possibleValuesPositionsMap.put(possibleValue, possibleValuesPositions);
                     }
                 }
             }
 
-        	int value;
-        	int position;
-        	for (Entry<Integer,List<Integer>> entry : possibleValuesPositionsMap.entrySet()) {
-        		if (entry.getValue().size() == 1) {
-        			solutions++;
-        			value = entry.getKey();
-        			possibleValuesPositions = entry.getValue();
-        			position = possibleValuesPositions.get(0);
+            int value;
+            int position;
+            for (Entry<Integer,List<Integer>> entry : possibleValuesPositionsMap.entrySet()) {
+            	if (entry.getValue().size() == 1) {
+            		solutions++;
+            		numOfSolutionsForStep++;
+            		value = entry.getKey();
+            		position = entry.getValue().get(0);
 
-        			// solve field + update helper arrays
-        			switch(type) {
-        			case(TYPE_ROW):
-        				unsolvedBoard[m][position] = value;
-        				numberOfPossibleValuesBoard[m][position]--;
-        				possibleValuesBoard[m][position] = null;
-        			case(TYPE_COLUMN):
-        				unsolvedBoard[position][m] = value;
-        				numberOfPossibleValuesBoard[position][m]--;
-        				possibleValuesBoard[position][m] = null;
-        			case(TYPE_BLOCK):
-        				int x1 = ((m / 3 ) * 3) + (position / 3);
-        	        	int y1 = ((m % 3) * 3) + (position % 3);
-        				unsolvedBoard[x1][y1] = value;
-        				numberOfPossibleValuesBoard[x1][y1]--;
-        				possibleValuesBoard[x1][y1] = null;
-        			}
-        			//logger.info("Row " + m + ", found only 1 possible possition " + position + " for value " + value);
-        		}
-        	}
+            		int x = 0, y = 0, b = 0;
+            		switch(type) {
+            		case(TYPE_ROW):
+            			x = m;
+            			y = position;
+            			break;
+            		case(TYPE_COLUMN):
+            			x = position;
+            			y = m;
+            			break;
+            		case(TYPE_BLOCK):
+            			x = ((m / 3 ) * 3) + (position / 3);
+            			y = ((m % 3) * 3) + (position % 3);
+            			break;
+            		}
+            		b = ((x / 3) * 3) + (y / 3);
+            		updateArraysAfterSolving(x, y, b, value);
+            	}
+            }
+
+            /*
+            // #2
+            // Find if there are only 2 possible fields for 2 values (or 3 for 3, etc.) in section, and fields are the same.
+            // Remove these values from other unsolved fields in section, to further eliminate possible values and bring us closer to solution.
+
+            List<Integer> possiblePositionsMultiple1;
+            List<Integer> possiblePositionsMultiple2;
+            List<Integer> possiblePositionsIntersection;
+            int solvedIntersections = 0;
+
+            for (int num1 = 1; num1 <= 9; num1++) {
+                for (int num2 = 1; num2 <= 9; num2++) {
+
+                	if (num2 == num1)
+                		continue;
+
+                    if (possibleValuesPositionsMap.containsKey(num1) && possibleValuesPositionsMap.containsKey(num2)) {
+                        possiblePositionsMultiple1 = possibleValuesPositionsMap.get(num1);
+                        possiblePositionsMultiple2 = possibleValuesPositionsMap.get(num2);
+                        possiblePositionsIntersection = ListUtils.intersection(possiblePositionsMultiple1, possiblePositionsMultiple2);
+
+                        // TODO: napraviti istu petlju za 3 (za 4 mislim da ne treba... ali kroz testove æu ustanoviti)
+                        if (possiblePositionsIntersection.size() == 2) {
+                        	for (int possibleValue : possiblePositionsIntersection) {
+	                            for (int n = 0; n < 9; n++) {		// iterate through columns in the row / rows in the column / fields in the block
+
+	                            	// if we found that for 2 numbers ony 2 positions are possible (-> intersection),
+	                            	// remove these numbers from other positions in section
+	                                if (possibleValuesArray[n] != null && !possiblePositionsIntersection.contains(Integer.valueOf(n))) {
+	                                    possibleValuesArray[n].remove(Integer.valueOf(num1));
+	                                    possibleValuesArray[n].remove(Integer.valueOf(num2));
+	                                    solvedIntersections++;
+	                                }
+	                            }
+                            }
+                        }
+                    }
+                }
+            }
+            if (solvedIntersections > 0) {
+	        	logger.debug("Possible values board (after solving intersections):");
+	        	BoardUtils.printPossibleValuesBoard(possibleValuesBoard);
+            }
+            */
         }
-        logger.info("Step " + step + "...solved " + solutions + " fields");
-    	if (solutions > 0) {
-    		return solveSections(board, type);
-    	}
-    	return board;
+
+        logger.info("Step " + step + "...solved " + solutions + " fields, remaining " + BoardUtils.unsolvedFieldsRemaining(board) + " fields");
+        if (solutions > 0) {
+            return solveSections(board, type);
+        }
+        return board;
+    }
+
+    private void updateArraysAfterSolving(int x, int y, int b, int value) {
+        unsolvedBoard[x][y] = value;
+        possibleValuesBoard[x][y] = null;
+
+        // remove solved value from other fields in sections
+        for (List<Integer> possibleValues : getPossibleValuesRow(possibleValuesBoard, x)) {
+            if (possibleValues != null) {
+                possibleValues.remove(Integer.valueOf(value));
+                if (possibleValues.size() == 0) {
+                    possibleValues = null;
+                }
+            }
+        }
+        for (List<Integer> possibleValues : getPossibleValuesColumn(possibleValuesBoard, y)) {
+            if (possibleValues != null) {
+                possibleValues.remove(Integer.valueOf(value));
+                if (possibleValues.size() == 0) {
+                    possibleValues = null;
+                }
+            }
+        }
+        for (List<Integer> possibleValues : getPossibleValuesBlock(possibleValuesBoard, b)) {
+            if (possibleValues != null) {
+                possibleValues.remove(Integer.valueOf(value));
+                if (possibleValues.size() == 0) {
+                    possibleValues = null;
+                }
+            }
+        }
+
+        // decrease numberOfPossibleValuesBoard fields after updating possibleValuesBoard
+        for (int row = 0; row < 9; row++) {
+            for (int column = 0; column < 9; column++) {
+                List<Integer> possibleValues = possibleValuesBoard[row][column];
+                if (possibleValues == null) {
+                    numberOfPossibleValuesBoard[row][column] = 0;
+                } else {
+                    numberOfPossibleValuesBoard[row][column] = possibleValues.size();
+                }
+            }
+        }
     }
 
     private List<Integer>[] getPossibleValuesSection(List<Integer>[][] board, int index, String type) {
-    	List<Integer>[] section = null;
-    	switch (type) {
-    	case(TYPE_ROW):
-    		section = getPossibleValuesRow(board, index);
-    		break;
-    	case(TYPE_COLUMN):
-    		section = getPossibleValuesColumn(board, index);
-    		break;
-    	case(TYPE_BLOCK):
-    		section = getPossibleValuesBlock(board, index);
-    		break;
-    	}
-    	return section;
+        List<Integer>[] section = null;
+        switch (type) {
+        case(TYPE_ROW):
+            section = getPossibleValuesRow(board, index);
+            break;
+        case(TYPE_COLUMN):
+            section = getPossibleValuesColumn(board, index);
+            break;
+        case(TYPE_BLOCK):
+            section = getPossibleValuesBlock(board, index);
+            break;
+        }
+        return section;
     }
 
     private List<Integer>[] getPossibleValuesRow(List<Integer>[][] possibleValuesBoard, int rowIndex) {
@@ -255,10 +368,10 @@ public class Solver {
         int i = 0;
         int x1 = (blockIndex / 3 ) * 3;
         int y1 = (blockIndex % 3) * 3;
-        //logger.info("blockIndex=" + blockIndex + ", x1=" + x1 + ", y1=" + y1);
         for (int x = x1; x < x1 + 3; x++) {
             for (int y = y1; y < y1 + 3; y++) {
-                block[i++] = possibleValuesBoard[x][y];
+                block[i] = possibleValuesBoard[x][y];
+                i++;
             }
         }
         return block;
