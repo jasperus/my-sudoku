@@ -1,0 +1,39 @@
+.baseStyle {
+    background: #fff;
+    float: left;
+    font-size: 24px;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    border: 2px solid #999999;
+}
+
+.segment {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    border: 1px solid #333333;
+}
+
+.square {
+    border: 1px solid #555555;
+    float: left;
+    font-size: 24px;
+    font-weight: normal;
+    line-height: 36px;
+    height: 36px;
+    width: 36px;
+}
+
+.segment-row {
+    clear: both;
+    content: '';
+    display: table;
+}
