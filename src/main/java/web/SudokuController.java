@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class SudokuController {
 
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 
 //	@RequestMapping(value = "/demo", method = { RequestMethod.POST })
 //	public ModelAndView reloadAllReports(HttpServletRequest request) {

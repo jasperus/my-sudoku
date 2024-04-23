@@ -1,20 +1,16 @@
 package work;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-
+import model.BoardExamples;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import model.BoardExamples;
 import util.BoardUtils;
 import util.Statistics;
 
 public class Sudoku {
 
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 
-	public static void main(String[] args) throws UnsupportedEncodingException {
+	public static void main(String[] args) {
 
 //		cleanBoardIncrementalAndTestForSolutions();
 //		cleanBoardFixedAndTestForSolutions(53, 100);
@@ -24,11 +20,11 @@ public class Sudoku {
 
 //		testCleanedBoardsForSolutions(examples.boardDemoCleaned_30_3)
 //		testCleanedBoardsForSolutions(examples.boardDemoCleaned_70_2)
-//		testCleanedBoardsForSolutions(examples.hardestBoardCleaned);		// za pronala�enje rje�enja ovog boarda treba 18 sec
+//		testCleanedBoardsForSolutions(examples.hardestBoardCleaned);		// za pronalaženje rješenja ovog boarda treba 18 sec
 
-//		solveBoard(examples.hardestBoard, examples.hardestBoardCleaned);	// ovo ipak ostaviti za kraj, biti �e jako te�ko napraviti algoritam koji ovo uspijeva rije�iti
+//		solveBoard(examples.hardestBoard, examples.hardestBoardCleaned);	// ovo ipak ostaviti za kraj, biti će jako teško napraviti algoritam koji ovo uspijeva riješiti
 //		solveBoard(examples.testBoard, examples.testBoard_cleaned_50_1);	// ovo uspije rije�iti sa osnovnim algoritmom
-		solveBoard(examples.sudokuExample_hard_cleaned);			// imam gre�ku u algoritmu, ostala su samo 3 polja za rije�iti, ali izgleda da je krivo rije�ilo, pa je do�lo do nemogu�e situacije
+		solveBoard(examples.sudokuExample_hard_cleaned);			// imam grešku u algoritmu, ostala su samo 3 polja za riješiti, ali izgleda da je krivo riješilo, pa je došlo do nemoguće situacije
 
 	}
 
@@ -66,9 +62,9 @@ public class Sudoku {
 		logger.info("Cleaned board:");
 		BoardUtils.printBoard(cleanedBoard);
 		solutions.findPossibleSolutions(cleanedBoard);
-		// FIXME: dok nisam istitrao algoritam, ne�e rije�iti do kraja,
-		// ali �e ipak isprintati, jer board zapravo ima samo jedno rje�enje
-		// razmi�ljao sam u budu�nost...
+		// FIXME: dok nisam istitrao algoritam, neće riješiti do kraja,
+		// ali će ipak isprintati, jer board zapravo ima samo jedno rješenje
+		// razmišljao sam u budućnost...
 		if (solutions.getNumOfSolutions() == 1) {
 			logger.info("Found 1 possible solution:");
 			BoardUtils.printBoard(solutions.getSolvedBoards().get(0).getBoard());

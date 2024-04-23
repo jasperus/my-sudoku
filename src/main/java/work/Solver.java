@@ -14,7 +14,7 @@ import util.BoardUtils;
 
 public class Solver {
 
-    private static Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 
     private static final int NO_VALUE = 0;
     private static final int BOARD_SIZE = 9;
@@ -105,8 +105,8 @@ public class Solver {
         		return partialySolvedBoard;
         	printStep();
 
-        	// možda nam ova 3 ne trebaju, nisu riješila ništa (?)
-        	// doduše, za sada sam pokrenuo samo za jedan "cleared board"
+        	// moï¿½da nam ova 3 ne trebaju, nisu rijeï¿½ila niï¿½ta (?)
+        	// doduï¿½e, za sada sam pokrenuo samo za jedan "cleared board"
         	logger.info("#" + loop + ".2 - Solving rows...");
         	partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_ROW);
         	if (BoardUtils.isSolved(partialySolvedBoard))
@@ -142,13 +142,13 @@ public class Solver {
     private int[][] solveOneSolutionFields(int[][] board) {
         step++;
         List<Integer> possibleValues;
-        int solutions = 0;
+        int numSolvedFields = 0;
         int boardIndex = 0;
 
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y <9; y++) {
                 if (numberOfPossibleValuesBoard[x][y] == 1) {
-                    solutions++;
+                    numSolvedFields++;
                     numOfSolutionsForStep++;
                     possibleValues = possibleValuesBoard[x][y];
                     boardIndex = ((x / 3) * 3) + (y / 3);
@@ -156,10 +156,10 @@ public class Solver {
                 }
             }
         }
-        logger.info("Step " + step + "...solved " + solutions + " fields, remaining " + BoardUtils.unsolvedFieldsRemaining(board) + " fields");
+        logger.info("Step " + step + "...solved " + numSolvedFields + " fields, remaining " + BoardUtils.unsolvedFieldsRemaining(board) + " fields");
 //        logger.debug("Possible values board:");
 //        BoardUtils.printPossibleValuesBoard(possibleValuesBoard);
-        if (solutions > 0) {
+        if (numSolvedFields > 0) {
             return solveOneSolutionFields(board);
         }
         return board;
@@ -167,7 +167,7 @@ public class Solver {
 
     private int[][] solveSections(int[][] board, String type) {
         step++;
-        int solutions = 0;
+        int numSolvedFields = 0;
         List<Integer>[] possibleValuesArray;
         List<Integer> possibleValuesPositions;
 
@@ -176,7 +176,7 @@ public class Solver {
         // it does contain that for values 2 and 3 possible positions are 5 and 7
         Map<Integer,List<Integer>> possibleValuesPositionsMap;
 
-        // FIXME: ovdje je nešto jako krivo...nemoguæe da je uspio riješiti 12 polja u prvom stepu, a ova beskonaèna petlja nakon toga...uh
+        // FIXME: ovdje je neï¿½to jako krivo...nemoguï¿½e da je uspio rijeï¿½iti 12 polja u prvom stepu, a ova beskonaï¿½na petlja nakon toga...uh
         // #1.2 - Solving rows...
         // Step 5...solved 12 fields
         // Step 6...solved 7 fields
@@ -207,7 +207,7 @@ public class Solver {
             int position;
             for (Entry<Integer,List<Integer>> entry : possibleValuesPositionsMap.entrySet()) {
             	if (entry.getValue().size() == 1) {
-            		solutions++;
+            		numSolvedFields++;
             		numOfSolutionsForStep++;
             		value = entry.getKey();
             		position = entry.getValue().get(0);
@@ -253,7 +253,7 @@ public class Solver {
                         possiblePositionsMultiple2 = possibleValuesPositionsMap.get(num2);
                         possiblePositionsIntersection = ListUtils.intersection(possiblePositionsMultiple1, possiblePositionsMultiple2);
 
-                        // TODO: napraviti istu petlju za 3 (za 4 mislim da ne treba... ali kroz testove æu ustanoviti)
+                        // TODO: napraviti istu petlju za 3 (za 4 mislim da ne treba... ali kroz testove ï¿½u ustanoviti)
                         if (possiblePositionsIntersection.size() == 2) {
                         	for (int possibleValue : possiblePositionsIntersection) {
 	                            for (int n = 0; n < 9; n++) {		// iterate through columns in the row / rows in the column / fields in the block
@@ -278,8 +278,8 @@ public class Solver {
             */
         }
 
-        logger.info("Step " + step + "...solved " + solutions + " fields, remaining " + BoardUtils.unsolvedFieldsRemaining(board) + " fields");
-        if (solutions > 0) {
+        logger.info("Step " + step + "...solved " + numSolvedFields + " fields, remaining " + BoardUtils.unsolvedFieldsRemaining(board) + " fields");
+        if (numSolvedFields > 0) {
             return solveSections(board, type);
         }
         return board;
@@ -347,9 +347,7 @@ public class Solver {
     private List<Integer>[] getPossibleValuesRow(List<Integer>[][] possibleValuesBoard, int rowIndex) {
         @SuppressWarnings("unchecked")
         List<Integer>[] row = new ArrayList[9];
-        for (int y = 0; y < BOARD_SIZE; y++) {
-            row[y] = possibleValuesBoard[rowIndex][y];
-        }
+        System.arraycopy(possibleValuesBoard[rowIndex], 0, row, 0, BOARD_SIZE);
         return row;
     }
 

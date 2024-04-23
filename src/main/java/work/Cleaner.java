@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Cleaner {
 
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 
 	private static final int NO_VALUE = 0;
     private static final int BOARD_SIZE = 9;
@@ -19,26 +19,26 @@ public class Cleaner {
 
 	private List<Integer> emptyPositions;
 
-	// TODO: eventualno doraditi da po teûini miËe polja po boardovima (dodatno prouËiti literaturu na öto treba paziti)
+	// TODO: eventualno doraditi da po te≈æini miƒçe polja po boardovima (dodatno prouƒçiti literaturu na ≈°to treba paziti)
     public int[][] cleanBoard(int[][] board, int numEmptyFields) {
     	this.board = board;
     	this.emptyPositions = new ArrayList<Integer>();
     	return cleanBoard(numEmptyFields);
     }
 
-    public int[][] cleanBoard(int numEmptyFields) {
+    public int[][] cleanBoard(int numFieldsForCleaning) {
         Random rand = new Random();
         int random;
 
-        int emptyPositionsNum = 0;
+        int numCleanFields = 0;
 
         do {
              random = rand.nextInt(BOARD_SIZE * BOARD_SIZE);
              if (!emptyPositions.contains(random)) {
                  emptyPositions.add(random);
-                 emptyPositionsNum++;
+                 numCleanFields++;
              }
-        } while (emptyPositionsNum < numEmptyFields);
+        } while (numCleanFields < numFieldsForCleaning);
 
         Collections.sort(emptyPositions);
 
