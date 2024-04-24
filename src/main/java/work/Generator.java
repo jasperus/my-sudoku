@@ -1,20 +1,18 @@
 package work;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import util.BoardUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Slf4j
 public class Generator {
 
-    private static final Logger logger = LogManager.getLogger();
-
     // these two must be instance variables b/c of recursion
-    private int[][] board;
-    private int[] depth;        // limit number of recursions for every row
+    private final int[][] board;
+    private final int[] depth;        // limit number of recursions for every row
 
     public Generator() {
         board = new int[9][9];
@@ -27,7 +25,7 @@ public class Generator {
 
     private int[][] createBoard(int xStart, int yStart) {
 
-        logger.trace("createBoard [row " + xStart + ", depth=" + depth[xStart] + "]");
+        log.trace("createBoard [row {}, depth={}]", xStart, depth[xStart]);
 
         List<Integer> fullRange = new ArrayList<Integer>();
 
@@ -40,7 +38,7 @@ public class Generator {
 
         Random rand = new Random();
         for (int x = xStart; x < 9; x++) {
-            logger.trace("x=" + x);
+            log.trace("x={}", x);
             for (int y = yStart; y < 9; y++) {
                 range = new ArrayList<Integer>(fullRange);
                 int random;
@@ -70,12 +68,12 @@ public class Generator {
                         }
 
                     } else {
-                        range.remove(new Integer(random));
+                        range.remove(Integer.valueOf(random));
                     }
                 } while (!BoardUtils.isNumberCandidate(board, x, y, random));
 
                 board[x][y] = random;
-                range.remove(new Integer(random));
+                range.remove(Integer.valueOf(random));
             }
         }
         return board;

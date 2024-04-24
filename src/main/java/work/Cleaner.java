@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@Slf4j
 public class Cleaner {
-
-	private static final Logger logger = LogManager.getLogger();
 
 	private static final int NO_VALUE = 0;
     private static final int BOARD_SIZE = 9;
@@ -42,15 +42,15 @@ public class Cleaner {
 
         Collections.sort(emptyPositions);
 
-        logger.trace("Empty positions:" + emptyPositions.toString());
+        log.trace("Empty positions: {}", emptyPositions.toString());
 
         int emptyPosition, emptyX, emptyY;
         int emptyPositionsSize = emptyPositions.size();
-        for (int i = 0; i < emptyPositionsSize; i++) {
-            emptyPosition = emptyPositions.get(i);
+        for (Integer position : emptyPositions) {
+            emptyPosition = position;
             emptyX = emptyPosition / 9;
             emptyY = emptyPosition % 9;
-            logger.trace("Position:" + emptyPosition + ", X=" + emptyX + ", Y=" + emptyY);
+            log.trace("Position: {}, X={}, Y={}", emptyPosition, emptyX, emptyY);
 
             board[emptyX][emptyY] = NO_VALUE;
         }

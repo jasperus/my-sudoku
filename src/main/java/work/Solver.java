@@ -6,15 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.collections4.ListUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import util.BoardUtils;
 
+@Slf4j
 public class Solver {
-
-    private static final Logger logger = LogManager.getLogger();
 
     private static final int NO_VALUE = 0;
     private static final int BOARD_SIZE = 9;
@@ -33,7 +30,7 @@ public class Solver {
 
     int numOfSolutionsForStep = 0;
 
-    int[][] partialySolvedBoard;
+    int[][] partiallySolvedBoard;
 
     private int step;
 
@@ -42,7 +39,7 @@ public class Solver {
         numberOfPossibleValuesBoard = new int[9][9];
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y < 9; y++) {
-                possibleValuesBoard[x][y] = new ArrayList<Integer>();
+                possibleValuesBoard[x][y] = new ArrayList<>();
                 numberOfPossibleValuesBoard[x][y] = 0;
             }
         }
@@ -56,7 +53,7 @@ public class Solver {
         for (int x = 0; x < BOARD_SIZE; x++) {
             for (int y = 0; y < BOARD_SIZE; y++) {
                 if (unsolvedBoard[x][y] == NO_VALUE) {
-                    possibleValues = new ArrayList<Integer>();
+                    possibleValues = new ArrayList<>();
                     for (int possibleValue = 1; possibleValue <= 9; possibleValue++) {
                         if (BoardUtils.isNumberCandidate(unsolvedBoard, x, y, possibleValue)) {
                             possibleValues.add(possibleValue);
@@ -99,40 +96,40 @@ public class Solver {
         	numOfSolutionsForStep = 0;
         	loop++;
 
-        	logger.info("#" + loop + ".1 - Solving one solution fields...");
-        	partialySolvedBoard = solveOneSolutionFields(unsolvedBoard);
-        	if (BoardUtils.isSolved(partialySolvedBoard))
-        		return partialySolvedBoard;
+        	log.info("#{}.1 - Solving one solution fields...", loop);
+        	partiallySolvedBoard = solveOneSolutionFields(unsolvedBoard);
+        	if (BoardUtils.isSolved(partiallySolvedBoard))
+        		return partiallySolvedBoard;
         	printStep();
 
         	// mo�da nam ova 3 ne trebaju, nisu rije�ila ni�ta (?)
         	// dodu�e, za sada sam pokrenuo samo za jedan "cleared board"
-        	logger.info("#" + loop + ".2 - Solving rows...");
-        	partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_ROW);
-        	if (BoardUtils.isSolved(partialySolvedBoard))
-        		return partialySolvedBoard;
+        	log.info("#{}.2 - Solving rows...", loop);
+        	partiallySolvedBoard = solveSections(partiallySolvedBoard, TYPE_ROW);
+        	if (BoardUtils.isSolved(partiallySolvedBoard))
+        		return partiallySolvedBoard;
         	printStep();
 
-        	logger.info("#" + loop + ".3 - Solving columns...");
-        	partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_COLUMN);
-        	if (BoardUtils.isSolved(partialySolvedBoard))
-        		return partialySolvedBoard;
+        	log.info("#{}.3 - Solving columns...", loop);
+        	partiallySolvedBoard = solveSections(partiallySolvedBoard, TYPE_COLUMN);
+        	if (BoardUtils.isSolved(partiallySolvedBoard))
+        		return partiallySolvedBoard;
         	printStep();
 
-        	logger.info("#" + loop + ".4 - Solving blocks...");
-        	partialySolvedBoard = solveSections(partialySolvedBoard, TYPE_BLOCK);
-        	if (BoardUtils.isSolved(partialySolvedBoard))
-        		return partialySolvedBoard;
+        	log.info("#{}.4 - Solving blocks...", loop);
+        	partiallySolvedBoard = solveSections(partiallySolvedBoard, TYPE_BLOCK);
+        	if (BoardUtils.isSolved(partiallySolvedBoard))
+        		return partiallySolvedBoard;
         	printStep();
 
         } while (numOfSolutionsForStep > 0);
 
-        return partialySolvedBoard;
+        return partiallySolvedBoard;
     }
 
     private void printStep() {
-    	logger.debug("Partially solved board:");
-    	BoardUtils.printBoard(partialySolvedBoard);
+    	log.debug("Partially solved board:");
+    	BoardUtils.printBoard(partiallySolvedBoard);
 //    	logger.debug("Number of possible values:");
 //    	BoardUtils.printBoard(numberOfPossibleValuesBoard);
 //    	logger.debug("Possible values board:");
@@ -143,7 +140,7 @@ public class Solver {
         step++;
         List<Integer> possibleValues;
         int numSolvedFields = 0;
-        int boardIndex = 0;
+        int boardIndex;
 
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y <9; y++) {
@@ -156,7 +153,8 @@ public class Solver {
                 }
             }
         }
-        logger.info("Step " + step + "...solved " + numSolvedFields + " fields, remaining " + BoardUtils.unsolvedFieldsRemaining(board) + " fields");
+        log.info("Step {}...solved {} fields, remaining {} fields",
+                step, numSolvedFields, BoardUtils.unsolvedFieldsRemaining(board));
 //        logger.debug("Possible values board:");
 //        BoardUtils.printPossibleValuesBoard(possibleValuesBoard);
         if (numSolvedFields > 0) {
@@ -187,7 +185,7 @@ public class Solver {
         // If found, solve field and remove value from other unsolved fields in section.
         for (int m = 0; m < 9; m++) {	// iterate through rows / columns / blocks
             possibleValuesArray = getPossibleValuesSection(possibleValuesBoard, m, type);
-            possibleValuesPositionsMap = new HashMap<Integer,List<Integer>>();
+            possibleValuesPositionsMap = new HashMap<>();
 
             for (int n = 0; n < 9; n++) {		// iterate through columns in the row / rows in the column / fields in the block
                 if (possibleValuesArray[n] != null) {
@@ -212,21 +210,21 @@ public class Solver {
             		value = entry.getKey();
             		position = entry.getValue().get(0);
 
-            		int x = 0, y = 0, b = 0;
-            		switch(type) {
-            		case(TYPE_ROW):
-            			x = m;
-            			y = position;
-            			break;
-            		case(TYPE_COLUMN):
-            			x = position;
-            			y = m;
-            			break;
-            		case(TYPE_BLOCK):
-            			x = ((m / 3 ) * 3) + (position / 3);
-            			y = ((m % 3) * 3) + (position % 3);
-            			break;
-            		}
+            		int x = 0, y = 0, b;
+                    switch (type) {
+                        case (TYPE_ROW) -> {
+                            x = m;
+                            y = position;
+                        }
+                        case (TYPE_COLUMN) -> {
+                            x = position;
+                            y = m;
+                        }
+                        case (TYPE_BLOCK) -> {
+                            x = ((m / 3) * 3) + (position / 3);
+                            y = ((m % 3) * 3) + (position % 3);
+                        }
+                    }
             		b = ((x / 3) * 3) + (y / 3);
             		updateArraysAfterSolving(x, y, b, value);
             	}
@@ -278,7 +276,8 @@ public class Solver {
             */
         }
 
-        logger.info("Step " + step + "...solved " + numSolvedFields + " fields, remaining " + BoardUtils.unsolvedFieldsRemaining(board) + " fields");
+        log.info("Step {}...solved {} fields, remaining {} fields",
+                step, numSolvedFields, BoardUtils.unsolvedFieldsRemaining(board));
         if (numSolvedFields > 0) {
             return solveSections(board, type);
         }
@@ -329,18 +328,12 @@ public class Solver {
     }
 
     private List<Integer>[] getPossibleValuesSection(List<Integer>[][] board, int index, String type) {
-        List<Integer>[] section = null;
-        switch (type) {
-        case(TYPE_ROW):
-            section = getPossibleValuesRow(board, index);
-            break;
-        case(TYPE_COLUMN):
-            section = getPossibleValuesColumn(board, index);
-            break;
-        case(TYPE_BLOCK):
-            section = getPossibleValuesBlock(board, index);
-            break;
-        }
+        List<Integer>[] section = switch (type) {
+            case (TYPE_ROW) -> getPossibleValuesRow(board, index);
+            case (TYPE_COLUMN) -> getPossibleValuesColumn(board, index);
+            case (TYPE_BLOCK) -> getPossibleValuesBlock(board, index);
+            default -> null;
+        };
         return section;
     }
 
