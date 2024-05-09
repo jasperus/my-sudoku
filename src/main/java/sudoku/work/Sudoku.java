@@ -1,9 +1,9 @@
-package work;
+package sudoku.work;
 
 import lombok.extern.slf4j.Slf4j;
-import model.BoardExamples;
-import util.BoardUtils;
-import util.Statistics;
+import sudoku.model.BoardExamples;
+import sudoku.util.BoardUtils;
+import sudoku.util.Statistics;
 
 @Slf4j
 public class Sudoku {

@@ -1,16 +1,14 @@
-package work;
+package sudoku.work;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import lombok.Getter;
-import model.Board;
-import util.BoardUtils;
+import sudoku.model.Board;
+import sudoku.util.BoardUtils;
 
 @Slf4j
 public class Solutions {

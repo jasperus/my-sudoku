@@ -1,10 +1,10 @@
-package util;
+package sudoku.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import model.Board;
-import model.BoardExamples;
+import sudoku.model.Board;
+import sudoku.model.BoardExamples;
 
 public class Test {
 

@@ -1,7 +1,7 @@
-package work;
+package sudoku.work;
 
 import lombok.extern.slf4j.Slf4j;
-import util.BoardUtils;
+import sudoku.util.BoardUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ public class Generator {
         return createBoard(0, 0);
     }
 
+    @SuppressWarnings("ReplaceArraysFill")
     private int[][] createBoard(int xStart, int yStart) {
 
         log.trace("createBoard [row {}, depth={}]", xStart, depth[xStart]);

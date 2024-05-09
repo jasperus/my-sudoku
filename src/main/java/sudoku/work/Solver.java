@@ -1,4 +1,4 @@
-package work;
+package sudoku.work;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import lombok.extern.slf4j.Slf4j;
 
-import util.BoardUtils;
+import sudoku.util.BoardUtils;
 
 @Slf4j
 public class Solver {
