@@ -2,16 +2,24 @@
     background: #fff;
     float: left;
     font-size: 24px;
+    color: black;
     font-weight: normal;
     margin: 0;
     padding: 0;
     text-align: center;
 }
 
+.page {
+    display: flex;
+    justify-content: center;
+    /*align-items: flex-start;*/
+}
+
 .board {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
+    justify-items: center;
     border: 2px solid #999999;
 }
 
@@ -36,4 +44,8 @@
     clear: both;
     content: '';
     display: table;
+}
+
+.editSquare {
+    color: #333333;
 }
