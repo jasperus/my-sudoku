@@ -7,7 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import sudoku.entity.util.BoardConverter;
+import sudoku.entity.converters.BoardConverter2D;
+import sudoku.entity.converters.BoardConverter3D;
 import sudoku.model.Difficulty;
 import sudoku.model.Status;
 import sudoku.model.Type;
@@ -32,17 +33,20 @@ public class Sudoku {
 
     private String player;
 
-    @Convert(converter = BoardConverter.class)
+    @Convert(converter = BoardConverter2D.class)
     private String[][] initialBoard;
 
-    @Convert(converter = BoardConverter.class)
-    private String[][] solvingNotes;       // 81 x 9
+    @Convert(converter = BoardConverter2D.class)
+    private String[][] board;
 
-    @Convert(converter = BoardConverter.class)
+    @Convert(converter = BoardConverter2D.class)
     private String[][] solvingSequence;
 
-    @Convert(converter = BoardConverter.class)
-    private String[][] board;
+    @Convert(converter = BoardConverter3D.class)
+    private String[][][] solvingNotes;
+
+    @Convert(converter = BoardConverter2D.class)
+    private String[][] highlightedFlags;
 
     private LocalTime elapsedTime;
 

@@ -1,19 +1,17 @@
 package sudoku.web;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import sudoku.entity.Sudoku;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import sudoku.entity.Sudoku;
 import sudoku.service.SudokuService;
 
 @RestController
@@ -34,6 +32,11 @@ public class SudokuController {
 	@PostMapping
 	public Sudoku createSudoku(@RequestBody Sudoku sudoku) {
 		return sudokuService.saveSudoku(sudoku);
+	}
+
+	@PutMapping("/{id}")
+	public Sudoku updateSudoku(@PathVariable Long id, @RequestBody Sudoku sudoku) {
+		return sudokuService.updateSudoku(id, sudoku);
 	}
 
 //	@PutMapping("/{id}")

@@ -1,4 +1,4 @@
-package sudoku.entity.util;
+package sudoku.entity.converters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,12 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 @Converter
 @RequiredArgsConstructor
 @Slf4j
-public class BoardConverter implements AttributeConverter<String[][], String> {
+public class BoardConverter3D implements AttributeConverter<String[][][], String> {
 
     private final ObjectMapper objectMapper;
 
     @Override
-    public String convertToDatabaseColumn(String[][] board) {
+    public String convertToDatabaseColumn(String[][][] board) {
         String boardJson = null;
         try {
             return objectMapper.writeValueAsString(board);
@@ -27,15 +27,10 @@ public class BoardConverter implements AttributeConverter<String[][], String> {
     }
 
     @Override
-    public String[][] convertToEntityAttribute(String boardJson) {
-        String[][] board = new String[9][9];
+    public String[][][] convertToEntityAttribute(String boardJson) {
+        String[][][] board = new String[9][9][9];
         try {
-            board = objectMapper.readValue(boardJson, new TypeReference<String[][]>() {
-    //            @Override
-    //            public Type getType() {
-    //                return super.getType();
-    //            }
-            });
+            board = objectMapper.readValue(boardJson, new TypeReference<>() {});
         } catch (JsonProcessingException e) {
             log.error("JSON reading error", e);
         }

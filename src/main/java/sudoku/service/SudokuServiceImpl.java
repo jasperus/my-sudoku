@@ -29,14 +29,16 @@ public class SudokuServiceImpl implements SudokuService {
         return newSudoku;
     }
 
-//    @Override
-//    public Sudoku updateSudoku(Long id, Sudoku sudoku) {
-//        Sudoku existingSudoku = sudokuRepository.findById(id).get();
-//
-//        existingSudoku.setInitialBoard(sudoku.getInitialBoard());
-//        existingSudoku.setBoard(sudoku.getBoard());
-//
-//        sudokuRepository.save(existingSudoku);
-//        return sudoku;
-//    }
+    @Override
+    public Sudoku updateSudoku(Long id, Sudoku sudoku) {
+        Sudoku existingSudoku = sudokuRepository.findById(id).get();
+
+        existingSudoku.setBoard(sudoku.getBoard());
+        existingSudoku.setSolvingSequence(sudoku.getSolvingSequence());
+        existingSudoku.setSolvingNotes(sudoku.getSolvingNotes());
+        existingSudoku.setHighlightedFlags(sudoku.getHighlightedFlags());
+
+        sudokuRepository.save(existingSudoku);
+        return sudoku;
+    }
 }

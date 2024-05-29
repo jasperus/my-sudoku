@@ -8,5 +8,5 @@ public interface SudokuService {
 
     Sudoku saveSudoku(Sudoku sudoku);
 
-//    Sudoku updateSudoku(Long id, Sudoku sudoku);
+    Sudoku updateSudoku(Long id, Sudoku sudoku);
 }
