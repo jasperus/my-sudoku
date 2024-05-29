@@ -1,3 +1,5 @@
+import {SquareCssClass} from "./constants";
+
 export type SudokuForm = {
   id: number;
   firstName: string;
@@ -34,27 +36,48 @@ export type Sudoku = {
   player: string;
   
   initialBoard: string[][];
-  solvingNotes: string[][][];
-  solvingSequence: string[][];
   board: string[][];
+  solvingSequence: string[][];
+  solvingNotes: string[][][];
+  highlightedFlags: string[][];
   
   elapsedTime: number;
 }
 
-export const initializedArray2D: string[][] = Array.from({length: 9},
-  () => Array.from({length: 9}, () => ''));
-export const initializedArray3D: string[][][] = Array.from({length: 9},
-  () => Array.from({length: 9}, () => Array.from({length: 9},  () => '')));
+// export const initializedArray1D: string[] = Array.from({length: 9}, () => '');
+
+export const initializedArray2D = (): string[][] => {
+  return Array.from({length: 9}, () => Array.from({length: 9}, () => ''));
+}
+
+export const initializedArray3D = (): string[][][] => {
+  return Array.from({length: 9}, () => Array.from({length: 9}, () => Array.from({length: 9},  () => '')));
+}
+
+export const initializedArray3Da = (): string[][][] => {
+  return Array.from({length: 9}, () => Array.from({length: 9}, () => Array.from({length: 2},  () => '')));
+}
+
+export const initializedArrayCss = (): SquareCssClass[][] => {
+  return Array.from({length: 9}, () =>
+    Array.from({length: 9}, () => ({
+      selected: false,
+      highlighted: false,
+      highlighted_error: false,
+      invalid: false
+    })));
+}
 
 export const sudokuInit : Sudoku = {
   type: Type.MANUAL_ENTRY,
   difficulty: Difficulty.EASY,
   player: "",
   
-  initialBoard: initializedArray2D,
-  solvingNotes: initializedArray3D,
-  solvingSequence: initializedArray2D,
-  board: initializedArray2D,
+  board: initializedArray2D(),
+  initialBoard: initializedArray2D(),
+  solvingSequence: initializedArray2D(),
+  solvingNotes: initializedArray3D(),
+  highlightedFlags: initializedArray2D(),
   
   elapsedTime: 0
 }
